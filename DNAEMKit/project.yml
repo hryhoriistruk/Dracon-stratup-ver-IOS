@@ -1,0 +1,78 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+name: DNAEMKit
+
+include:
+  - ../xcodegen_project_common.yml
+
+projectReferences:
+  FBSDKCoreKit_Basics:
+    path: ../DNSDKCoreKit_Basics/DNSDKCoreKit_Basics.xcodeproj
+  TestTools:
+    path: ../TestTools/TestTools.xcodeproj
+
+configFiles:
+  Debug: Configurations/Shared/Configuration/Debug.xcconfig
+  Release: Configurations/Shared/Configuration/Release.xcconfig
+
+targets:
+  FBAEMKit-Static:
+    templates:
+      - SwiftlintBuildPhaseTemplate
+    type: framework
+    platform: iOS
+    productName: DNAEMKit
+    sources:
+      - path: DNAEMKit
+    dependencies:
+      - target: DNSDKCoreKit_Basics/DNSDKCoreKit_Basics-Static
+        link: false
+    configFiles:
+      Debug: Configurations/DNAEMKit-Static.xcconfig
+      Release: Configurations/DNAEMKit-Static.xcconfig
+  FBAEMKit-Dynamic:
+    templates:
+      - SwiftlintBuildPhaseTemplate
+    type: framework
+    platform: iOS
+    productName: DNAEMKit
+    sources:
+      - path: DNAEMKit
+    dependencies:
+      - target: DNSDKCoreKit_Basics/DNSDKCoreKit_Basics-Dynamic
+      - sdk: UIKit.framework
+      - sdk: libz.tbd
+    configFiles:
+      Debug: Configurations/DNAEMKit-Dynamic.xcconfig
+      Release: Configurations/DNAEMKit-Dynamic.xcconfig
+  FBAEMKitTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - DNAEMKitTests
+    configFiles:
+      Debug: Configurations/DNAEMKitTests.xcconfig
+      Release: Configurations/DNAEMKitTests.xcconfig
+    dependencies:
+      - target: DNAEMKit-Dynamic
+      - target: TestTools/TestTools
+        embed: false
+
+schemes:
+  FBAEMKit-Static:
+    build:
+      targets:
+        FBAEMKit-Static: all
+  FBAEMKit-Dynamic:
+    build:
+      targets:
+        FBAEMKit-Dynamic: all
+    test:
+      targets: [DNAEMKitTests]
+      gatherCoverageData: true
+      coverageTargets:
+        - DNAEMKit-Dynamic
