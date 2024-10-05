@@ -1,0 +1,8 @@
+{
+
+  "hosting": {
+    "target": "dracon-88a07",
+    "public": "Dracon-stratup-ver-IOS0",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}
